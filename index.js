@@ -6,18 +6,18 @@ import config from "./Config/config.js";
 
 const TOOLS = new Map();
 
-// 非BDS使用模拟
-if (typeof mc === "undefined") {
-    var mc = {
-        runcmdEx: (...data) => `run cmd -> ${data}`,
-        getPlayer: () => { },
-        getAllScoreObjectives: (...data) => ["积分榜", "aaa", "bbb"],
-        listen: (event, callback) => { },
-        getBDSVersion: () => "v1.14.51.4",
-        getServerProtocolVersion: () => "114514",
-        getWeather: (mode) => `mode = ${mode}`
-    }
-}
+// // 非BDS使用模拟
+// if (typeof mc === "undefined") {
+//     var mc = {
+//         runcmdEx: (...data) => `run cmd -> ${data}`,
+//         getPlayer: () => { },
+//         getAllScoreObjectives: (...data) => ["积分榜", "aaa", "bbb"],
+//         listen: (event, callback) => { },
+//         getBDSVersion: () => "v1.14.51.4",
+//         getServerProtocolVersion: () => "114514",
+//         getWeather: (mode) => `mode = ${mode}`
+//     }
+// }
 
 
 
@@ -30,12 +30,12 @@ if (typeof mc === "undefined") {
             "获取服务器相关信息，如版本/游戏时间/游戏天气等",
             { type: 'object', properties: {} },
             () => ([
-                `版本: ${mc.getBDSVersion()} (${mc.getServerProtocolVersion()})`,
+                `版本: ${mc.getBDSVersion()} (协议版本 ${mc.getServerProtocolVersion()})`,
                 `天气: ${mc.getWeather()}`,
                 `白天时间: ${mc.getTime(0)}`,
                 `总游戏刻: ${mc.getTime(1)}`,
                 `游戏天数: ${mc.getTime(2)}`,
-                `当天时间: ${new Date().toLocaleString('zh-CN', { hour12: false })}}`,
+                `当天时间: ${new Date().toLocaleString('zh-CN', { hour12: false })}`,
                 `数据库玩家数: ${allPlayerNum}`
             ].join("\n"))
         );
@@ -67,7 +67,7 @@ if (typeof mc === "undefined") {
 
                     new_chunk: {
                         type: "boolean",
-                        description: "仅在未生成的区块中定位",
+                        description: "仅在未生成的区块中定位，当模式为biome时该项为空格",
                     },
                     pos_x: {
                         type: "string",
@@ -151,14 +151,16 @@ if (typeof mc === "undefined") {
                 }
             },
             ({ name }) => {
-                const dev = mc.getPlayer(name).getDevice();
-                let data = {};
+                const player = mc.getPlayer(name);
+                if (!player) return "玩家不在线";
+                const dev = player.getDevice();
+                let datas = {};
 
                 Object.entries(i18n.device).forEach(obj => {
-                    data[obj] = dev?.[obj] ?? null;
+                    datas[obj] = dev?.[obj] ?? null;
                 });
 
-                return data;
+                return datas;
             }
         );
 
@@ -176,13 +178,15 @@ if (typeof mc === "undefined") {
             },
             ({ name }) => {
                 const player = mc.getPlayer(name);
-                let data = {};
+                if (!player) return "玩家不在线";
+
+                let datas = {};
 
                 Object.entries(i18n.info).forEach(obj => {
-                    data[obj] = player?.[obj] ?? null;
+                    datas[obj] = player?.[obj] ?? null;
                 });
 
-                return data;
+                return datas;
             }
         );
 
@@ -198,12 +202,16 @@ if (typeof mc === "undefined") {
                     }
                 }
             },
-            ({ name }) => mc.getPlayer(name)?.getAllTags() ?? []
+            ({ name }) => {
+                const player = mc.getPlayer(name);
+                if (!player) return "玩家不在线";
+                return player?.getAllTags() ?? []
+            }
         );
 
     if (cfg.scoreboards)
         addTool("player_scoreboards",
-            "获取玩家的所有计分板数据",
+            "获取玩家的所有计分板数据，支持离线玩家",
             {
                 type: 'object',
                 properties: {
@@ -214,18 +222,21 @@ if (typeof mc === "undefined") {
                 }
             },
             ({ name }) => {
-                const player = mc.getPlayer(name);
-                let data = {};
-                mc.getAllScoreObjectives().forEach(name => {
-                    data[name] = player.getScore(name) ?? 0;
-                });
-                return data;
+                const uuid = mc.getPlayer(name)?.uuid ?? data.name2uuid(name);
+                if (!uuid) return "玩家不存在！";
+                let datas = {};
+                mc.getAllScoreObjectives()
+                    .map(obj => obj.name)
+                    .forEach(name => {
+                        datas[name] = mc.getPlayerScore(uuid, name) ?? 0;
+                    });
+                return datas;
             }
         );
 
     if (cfg.nbt)
         addTool("player_nbt",
-            "获取玩家的NBT数据",
+            "获取玩家的NBT数据，支持离线玩家",
             {
                 type: 'object',
                 properties: {
@@ -241,7 +252,11 @@ if (typeof mc === "undefined") {
                     }
                 }
             },
-            ({ name, space }) => mc.getPlayer(name).getNbt().toSNBT(space)
+            ({ name, space }) => {
+                const uuid = mc.getPlayer(name) ?? data.name2uuid(name);
+                if (!uuid) return "玩家不存在！";
+                return mc.getPlayerNbt(uuid).toSNBT(space)
+            }
         );
 
     if (cfg.chat.enable) {
@@ -266,9 +281,9 @@ if (typeof mc === "undefined") {
             mc.listen("onLeft", (player) => addChat(`${player.realName} 退出了游戏`));
 
         addTool("player_chat",
-            "获取所有聊天消息",
+            "获取所有玩家聊天消息",
             { type: 'object', properties: {} },
-            () => chatList.join("\n")
+            () => (chatList.length < 1 ? ["暂无消息"] : chatList).join("\n")
         );
     };
 }

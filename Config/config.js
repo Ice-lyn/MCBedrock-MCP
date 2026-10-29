@@ -27,9 +27,10 @@ export const config = {
             info: true, // 玩家游戏内数据（坐标/生命值/xuid等）
             device: true, // 玩家设备数据(IP/延迟/连接地址/客户端识别码等)
             tags: true, // 玩家所有标签查询
-            scoreboards: true, // 玩家所有积分榜查询
+            scoreboards: true, // 玩家所有积分榜查询 (支持离线玩家)
 
             // 玩家nbt查询
+            // 支持离线玩家
             // 他会返回较大的敏感数据！
             // 包括背包/末影箱/标签/生物事件/技能列表等
             nbt: false,
