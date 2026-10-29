@@ -1,0 +1,13 @@
+{
+    "name": "MCBedock-MCP",
+    "entry": "index.js",
+    "type": "lse-nodejs",
+    "version": "0.0.1",
+    "author": "冰凌呀",
+    "description": "基岩服务器MCP导出",
+    "dependencies": [
+        {
+            "name": "legacy-script-engine-nodejs"
+        }
+    ]
+}
