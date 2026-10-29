@@ -1,6 +1,7 @@
 // import
 /// <reference path="/root/VSCode/Library/lse/index.d.ts" />
 import { createServer } from 'node:http';
+import * as i18n from "./Config/i18n.js";
 import config from "./Config/config.js";
 
 const TOOLS = new Map();
@@ -204,6 +205,15 @@ const TOOLS = new Map();
 }
 
 
+// === MCP Server 逻辑区 === //
+
+/**
+ * 注册工具函数
+ * @param {string} name - 工具的唯一名称标识
+ * @param {string} description - 工具的功能描述（用于告知调用方用途）
+ * @param {Object} inputSchema - 工具的输入参数结构定义（JSON Schema格式）
+ * @param {Function} handler - 工具的执行处理函数
+ */
 function addTool(name, description, inputSchema, handler) {
     if (TOOLS.has(name)) throw new Error(`Tool already exists: ${name}`);
     TOOLS.set(name, { name, description, inputSchema, handler });
