@@ -201,7 +201,54 @@ const TOOLS = new Map();
             }
         );
 
+    if (cfg.nbt)
+        addTool("player_nbt",
+            "获取玩家的NBT数据",
+            {
+                type: 'object',
+                properties: {
+                    name: {
+                        type: "string",
+                        description: "玩家名",
+                    },
+                    space: {
+                        type: "number",
+                        description: "格式化输出的空格数",
+                        "minimum": 0,
+                        "maximum": 10,
+                    }
+                }
+            },
+            ({ name, space }) => mc.getPlayer(name).getNbt().toSNBT(space)
+        );
 
+    if (cfg.chat.enable) {
+        const chatList = [];
+        const addChat = (msg) => chatList.push(`[${new Date().toLocaleString('zh-CN', { hour12: false })}]${msg}`);
+
+        if (cfg.chat.chat)
+            mc.listen("onChat", (player, msg) => {
+                msg = `[${{ 0: "主世界", 1: "下界", 2: "末地" }[player.pos.dimid] || "未知"}]`
+                    + `${player.getDevice()?.avgPing > 100 ? `[${player.getDevice().avgPing}ms]` : ""}`
+                    + `${player.realName} >> ${msg}`;
+
+                if (cfg.chat.maxList >= 0 && chatList.length > cfg.chat.maxList)
+                    chatList.shift();
+                addChat(msg);
+            })
+
+        if (cfg.chat.join)
+            mc.listen("onJoin", (player) => addChat(`${player.realName} 加入了游戏`));
+
+        if (cfg.chat.left)
+            mc.listen("onLeft", (player) => addChat(`${player.realName} 退出了游戏`));
+
+        addTool("player_chat",
+            "获取所有聊天消息",
+            { type: 'object', properties: {} },
+            () => chatList.join("\n")
+        );
+    };
 }
 
 

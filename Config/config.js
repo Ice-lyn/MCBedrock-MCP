@@ -33,15 +33,13 @@ export const config = {
             nbt: false,
 
             // 聊天记录查询
-            msg: {
+            chat: {
                 enable: true, // 是否启用
                 join: true, // 玩家加入消息
                 left: true, // 玩家退出消息
                 chat: true, // 玩家聊天消息
                 maxList: 200, // 最大记录数，为-1时记录所有
             },
-
-            sendui: true, // 向玩家发送一个表单并获取返回值
         },
 
 
