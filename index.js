@@ -5,11 +5,203 @@ import config from "./Config/config.js";
 
 const TOOLS = new Map();
 
-addTool("test",
-    "aaaaaaaa",
-    { type: 'object', properties: {} },
-    () => "aaaaaaassssss"
-)
+// // 非BDS使用模拟
+// if (typeof mc === "undefined") {
+//     var mc = {
+//         runcmdEx: (...data) => `run cmd -> ${data}`,
+//         getPlayer: () => { },
+//         getAllScoreObjectives: (...data) => ["积分榜", "aaa", "bbb"]
+//     }
+// }
+
+
+
+// === 服务器相关 === //
+{
+    const cfg = config.module.server;
+    if (cfg.list)
+        addTool("server_list",
+            "获取服务器在线玩家列表",
+            { type: 'object', properties: {} },
+            () => mc.runcmdEx("list")
+        );
+
+    if (cfg.locate)
+        addTool("server_locate",
+            "在服务器中定位结构或群系",
+            {
+                type: 'object',
+                properties: {
+                    mode: {
+                        type: "string",
+                        description: "查询模式",
+                        enum: ["structure", "biome"],
+                    },
+                    id: {
+                        type: "string",
+                        description: "结构或群系id，如end_city",
+                    },
+
+                    new_chunk: {
+                        type: "boolean",
+                        description: "仅在未生成的区块中定位",
+                    },
+                    pos_x: {
+                        type: "string",
+                        default: "0",
+                        description: "定位起始点x坐标",
+                    },
+                    pos_y: {
+                        type: "string",
+                        default: "0",
+                        description: "定位起始点y坐标",
+                    },
+                    pos_z: {
+                        type: "string",
+                        default: "0",
+                        description: "定位起始点z坐标",
+                    },
+                    pos_dim: {
+                        type: "string",
+                        default: "overworld",
+                        enum: ["overworld", "nether", "the_end"],
+                        description: "定位起始点维度坐标",
+                    },
+                },
+                required: ["mode", "id", "new_chunk", "pos_dim", "pos_x", "pos_y", "pos_z"]
+            },
+            ({ mode, id, new_chunk, pos_dim, pos_x, pos_y, pos_z }) =>
+                mc.runcmdEx(`execute in ${pos_dim} positioned ${pos_x} ${pos_y} ${pos_z} run locate ${mode} ${id} ${new_chunk}`)
+        );
+
+    if (cfg.plugin)
+        addTool("server_plugins",
+            "获取服务器已加载插件列表",
+            { type: 'object', properties: {} },
+            () => mc.runcmdEx("ll list")
+        );
+
+    if (cfg.runcmd)
+        addTool("server_runcmd",
+            "运行服务器后台指令，慎用",
+            {
+                type: 'object',
+                properties: {
+                    cmd: {
+                        type: "string",
+                        description: "规范的MC基岩版指令",
+                    },
+                }
+            },
+            ({ cmd }) => mc.runcmdEx(cmd)
+        );
+
+    if (cfg.say)
+        addTool("server_say",
+            "向服务器所有在线玩家广播",
+            {
+                type: 'object',
+                properties: {
+                    text: {
+                        type: "string",
+                        description: "消息",
+                    }
+                }
+            },
+            ({ msg }) => mc.runcmdEx(`say ${msg}`)
+        );
+}
+
+// === 玩家相关 === //
+{
+    const cfg = config.module.player;
+    if (cfg.device)
+        addTool("player_device",
+            "获取玩家的设备信息，如IP/延迟/连接地址/客户端识别码等",
+            {
+                type: 'object',
+                properties: {
+                    name: {
+                        type: "string",
+                        description: "玩家名",
+                    }
+                }
+            },
+            ({ name }) => {
+                const dev = mc.getPlayer(name).getDevice();
+                let data = {};
+
+                Object.entries(i18n.device).forEach(obj => {
+                    data[obj] = dev?.[obj] ?? null;
+                });
+
+                return data;
+            }
+        );
+
+    if (cfg.info)
+        addTool("player_info",
+            "获取玩家的游戏内信息，如坐标/生命值/xuid等等",
+            {
+                type: 'object',
+                properties: {
+                    name: {
+                        type: "string",
+                        description: "玩家名",
+                    }
+                }
+            },
+            ({ name }) => {
+                const player = mc.getPlayer(name);
+                let data = {};
+
+                Object.entries(i18n.info).forEach(obj => {
+                    data[obj] = player?.[obj] ?? null;
+                });
+
+                return data;
+            }
+        );
+
+    if (cfg.tags)
+        addTool("player_tags",
+            "获取玩家的所有标签",
+            {
+                type: 'object',
+                properties: {
+                    name: {
+                        type: "string",
+                        description: "玩家名",
+                    }
+                }
+            },
+            ({ name }) => mc.getPlayer(name)?.getAllTags() ?? []
+        );
+
+    if (cfg.scoreboards)
+        addTool("player_scoreboards",
+            "获取玩家的所有计分板数据",
+            {
+                type: 'object',
+                properties: {
+                    name: {
+                        type: "string",
+                        description: "玩家名",
+                    }
+                }
+            },
+            ({ name }) => {
+                const player = mc.getPlayer(name);
+                let data = {};
+                mc.getAllScoreObjectives().forEach(name => {
+                    data[name] = player.getScore(name) ?? 0;
+                });
+                return data;
+            }
+        );
+
+
+}
 
 
 function addTool(name, description, inputSchema, handler) {
