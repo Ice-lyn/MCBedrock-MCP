@@ -1,5 +1,5 @@
 {
-    "name": "MCBedock-MCP",
+    "name": "MCBedrock-MCP",
     "entry": "index.js",
     "type": "lse-nodejs",
     "version": "0.0.1",
