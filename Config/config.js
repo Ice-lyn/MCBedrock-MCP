@@ -1,4 +1,5 @@
 export const config = {
+    host: "0.0.0.0", // 监听地址
     port: 4839, // 监听端口
 
     // 鉴权配置

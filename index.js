@@ -395,7 +395,18 @@ const server = createServer(async (req, res) => {
     res.end(JSON.stringify({ jsonrpc: '2.0', id, result }));
 });
 
-server.listen(config.port, () => {
-    console.log(`MCP server on http://localhost:${config.port}/mcp`);
-    console.log('Token:', config.key.key);
-});
+server.listen(config.port, config.host,
+    () => {
+        [
+            "MCP服务已启用！",
+            `- 连接地址: http://${config.host}:${config.port}/mcp`,
+            `- 鉴权密钥: ${config.key.enable ? config.key.key : "未启用"}`,
+            "- By 冰凌呀~"
+        ].forEach(info => logger.info(info));
+
+        ll.onUnload(() => {
+            server.close();
+            server.closeAllConnections?.();
+            logger.info("MCP 服务已关闭");
+        })
+    });
