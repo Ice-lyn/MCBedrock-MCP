@@ -12,6 +12,7 @@ export const config = {
 
         // 服务器相关
         server: {
+            info: true, // 服务器信息(版本/游戏时间/游戏天气等)
             list: true, // 玩家列表
             plugin: true, // 插件列表
 

@@ -6,20 +6,42 @@ import config from "./Config/config.js";
 
 const TOOLS = new Map();
 
-// // 非BDS使用模拟
-// if (typeof mc === "undefined") {
-//     var mc = {
-//         runcmdEx: (...data) => `run cmd -> ${data}`,
-//         getPlayer: () => { },
-//         getAllScoreObjectives: (...data) => ["积分榜", "aaa", "bbb"]
-//     }
-// }
+// 非BDS使用模拟
+if (typeof mc === "undefined") {
+    var mc = {
+        runcmdEx: (...data) => `run cmd -> ${data}`,
+        getPlayer: () => { },
+        getAllScoreObjectives: (...data) => ["积分榜", "aaa", "bbb"],
+        listen: (event, callback) => { },
+        getBDSVersion: () => "v1.14.51.4",
+        getServerProtocolVersion: () => "114514",
+        getWeather: (mode) => `mode = ${mode}`
+    }
+}
 
 
 
 // === 服务器相关 === //
 {
     const cfg = config.module.server;
+    if (cfg.info) {
+        const allPlayerNum = data.getAllPlayerInfo()?.length ?? -1
+        addTool("server_info",
+            "获取服务器相关信息，如版本/游戏时间/游戏天气等",
+            { type: 'object', properties: {} },
+            () => ([
+                `版本: ${mc.getBDSVersion()} (${mc.getServerProtocolVersion()})`,
+                `天气: ${mc.getWeather()}`,
+                `白天时间: ${mc.getTime(0)}`,
+                `总游戏刻: ${mc.getTime(1)}`,
+                `游戏天数: ${mc.getTime(2)}`,
+                `当天时间: ${new Date().toLocaleString('zh-CN', { hour12: false })}}`,
+                `数据库玩家数: ${allPlayerNum}`
+            ].join("\n"))
+        );
+    };
+
+
     if (cfg.list)
         addTool("server_list",
             "获取服务器在线玩家列表",
