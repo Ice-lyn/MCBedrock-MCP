@@ -29,6 +29,7 @@ export const config = {
             tags: true, // 玩家所有标签查询
             scoreboards: true, // 玩家所有积分榜查询 (支持离线玩家)
             query: true, // 在数据库中查询玩家 支持模糊搜索
+            tell: true, // 向指定玩家发送消息
 
             // 玩家nbt查询
             // 支持离线玩家

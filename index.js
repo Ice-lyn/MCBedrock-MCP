@@ -325,6 +325,37 @@ const TOOLS = new Map();
                 }
             }
         )
+
+    if (cfg.tell)
+        addTool("player_tell",
+            "向指定玩家发送消息",
+            {
+                type: 'object',
+                properties: {
+                    name: {
+                        type: "string",
+                        description: "玩家名",
+                    },
+                    text: {
+                        type: "string",
+                        description: "消息文本"
+                    },
+                    type: {
+                        type: "integer",
+                        description: "消息文本类型, 0: 普通消息(Raw), 1: 聊天消息(Chat), 4: 音乐盒消息(Popup), 5: 物品栏上方的消息(Tip), 9: JSON格式消息(JSON)",
+                        default: 1,
+                        minimum: 0,
+                        maximum: 9
+                    }
+                },
+                required: ["name", "text", "type"]
+            },
+            ({ name, text, type }) => {
+                const player = mc.getPlayer(name);
+                if (!player) return "玩家不在线";
+                return player.tell(text, type ?? 0);
+            }
+        );
 }
 
 
