@@ -91,9 +91,9 @@ const TOOLS = new Map();
                         description: "定位起始点维度坐标",
                     },
                 },
-                required: ["mode", "id", "new_chunk", "pos_dim", "pos_x", "pos_y", "pos_z"]
+                required: ["mode", "id"]
             },
-            ({ mode, id, new_chunk, pos_dim, pos_x, pos_y, pos_z }) =>
+            ({ mode, id, new_chunk = false, pos_dim = "overworld", pos_x = 0, pos_y = 0, pos_z = 0 }) =>
                 mc.runcmdEx(`execute in ${pos_dim} positioned ${pos_x} ${pos_y} ${pos_z} run locate ${mode} ${id} ${new_chunk}`)
         );
 
@@ -114,7 +114,8 @@ const TOOLS = new Map();
                         type: "string",
                         description: "规范的MC基岩版指令",
                     },
-                }
+                },
+                required: ["cmd"]
             },
             ({ cmd }) => mc.runcmdEx(cmd)
         );
@@ -129,7 +130,8 @@ const TOOLS = new Map();
                         type: "string",
                         description: "消息",
                     }
-                }
+                },
+                required: ["text"]
             },
             ({ msg }) => mc.runcmdEx(`say ${msg}`)
         );
@@ -148,7 +150,8 @@ const TOOLS = new Map();
                         type: "string",
                         description: "玩家名",
                     }
-                }
+                },
+                required: ["name"]
             },
             ({ name }) => {
                 const player = mc.getPlayer(name);
@@ -174,7 +177,8 @@ const TOOLS = new Map();
                         type: "string",
                         description: "玩家名",
                     }
-                }
+                },
+                required: ["name"]
             },
             ({ name }) => {
                 const player = mc.getPlayer(name);
@@ -201,7 +205,8 @@ const TOOLS = new Map();
                         type: "string",
                         description: "玩家名",
                     }
-                }
+                },
+                required: ["name"]
             },
             ({ name }) => {
                 const player = mc.getPlayer(name);
@@ -220,7 +225,8 @@ const TOOLS = new Map();
                         type: "string",
                         description: "玩家名",
                     }
-                }
+                },
+                required: ["name"]
             },
             ({ name }) => {
                 const uuid = mc.getPlayer(name)?.uuid ?? data.name2uuid(name);
@@ -246,14 +252,16 @@ const TOOLS = new Map();
                         description: "玩家名",
                     },
                     space: {
-                        type: "number",
+                        type: "integer",
                         description: "格式化输出的空格数",
-                        "minimum": 0,
-                        "maximum": 10,
+                        default: 0,
+                        minimum: 0,
+                        maximum: 10,
                     }
-                }
+                },
+                required: ["name"]
             },
-            ({ name, space }) => {
+            ({ name, space = 0 }) => {
                 const uuid = mc.getPlayer(name) ?? data.name2uuid(name);
                 if (!uuid) return "玩家不存在！";
                 return mc.getPlayerNbt(uuid).toSNBT(space)
@@ -302,7 +310,8 @@ const TOOLS = new Map();
                         type: "boolean",
                         description: "启用模糊搜索",
                     }
-                }
+                },
+                required: ["name", "space"]
             },
             ({ name, space }) => {
                 if (space) {
