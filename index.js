@@ -182,6 +182,7 @@ const TOOLS = new Map();
 
                 let datas = {};
 
+                data["群系"] = player.getBiomeName();
                 Object.entries(i18n.info).forEach(obj => {
                     datas[obj] = player?.[obj] ?? null;
                 });
