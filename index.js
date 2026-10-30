@@ -286,6 +286,44 @@ const TOOLS = new Map();
             () => (chatList.length < 1 ? ["暂无消息"] : chatList).join("\n")
         );
     };
+
+    if (cfg.query)
+        addTool("player_query",
+            "在数据库中查询玩家的简单数据 支持模糊搜索 支持离线玩家",
+            {
+                type: 'object',
+                properties: {
+                    name: {
+                        type: "string",
+                        description: "玩家名",
+                    },
+                    space: {
+                        type: "boolean",
+                        description: "启用模糊搜索",
+                    }
+                }
+            },
+            ({ name, space }) => {
+                if (space) {
+                    const kw = name.trim().toLowerCase();
+                    if (!kw) return "请检查输入数据";
+
+                    const datas = data.getAllPlayerInfo()
+                        .filter(item => item.name.toLowerCase().includes(kw))
+                        .map(datas => JSON.stringify(datas));
+                    
+                    if (datas.length === 0)
+                        return "未找到玩家数据";
+                    return datas;
+
+                } else {
+                    const datas = data.fromName(name);
+                    if (!datas)
+                        return "未找到玩家数据";
+                    return datas;
+                }
+            }
+        )
 }
 
 

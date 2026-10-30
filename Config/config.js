@@ -28,6 +28,7 @@ export const config = {
             device: true, // 玩家设备数据(IP/延迟/连接地址/客户端识别码等)
             tags: true, // 玩家所有标签查询
             scoreboards: true, // 玩家所有积分榜查询 (支持离线玩家)
+            query: true, // 在数据库中查询玩家 支持模糊搜索
 
             // 玩家nbt查询
             // 支持离线玩家
