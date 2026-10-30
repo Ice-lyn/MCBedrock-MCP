@@ -28,25 +28,27 @@
 
 ## 可用工具
 
-以下工具是否注册取决于 `Config/config.js` 中对应的模块开关。
+以下工具是否注册取决于 `Config/config.js` 中对应的模块开关；`player_chat` 由 `module.player.chat.enable` 控制。
 
-| 工具 | 用途 | 参数 |
-| --- | --- | --- |
-| `server_info` | 查询 BDS 版本、协议版本、天气、游戏时间和数据库玩家数 | 无 |
-| `server_list` | 查询在线玩家列表 | 无 |
-| `server_plugins` | 查询已加载的 LLSE 插件列表 | 无 |
-| `server_locate` | 定位结构或群系 | `mode`、`id`、`new_chunk`、`pos_dim`、`pos_x`、`pos_y`、`pos_z` |
-| `server_say` | 向所有在线玩家广播消息 | 消息文本 |
-| `server_runcmd` | 执行服务器后台指令 | `cmd` |
-| `player_info` | 查询玩家坐标、生命值、游戏状态、XUID 等信息 | `name` |
-| `player_device` | 查询玩家 IP、延迟、设备系统、客户端 ID 等信息 | `name` |
-| `player_tags` | 查询玩家标签 | `name` |
-| `player_scoreboards` | 查询玩家各计分板分数 | `name` |
-| `player_nbt` | 查询玩家 SNBT 数据 | `name`、可选 `space`（格式化缩进空格数） |
-| `player_chat` | 查询插件启动后收集的聊天、加入和退出记录 | 无 |
+| 工具 | 用途 |
+| --- | --- |
+| `server_info` | 查询 BDS 版本、协议版本、天气、游戏时间和数据库玩家数 |
+| `server_list` | 查询在线玩家列表 |
+| `server_plugins` | 查询已加载的 LLSE 插件列表 |
+| `server_locate` | 定位结构或群系 |
+| `server_say` | 向所有在线玩家广播消息 |
+| `server_runcmd` | 执行服务器后台指令 |
+| `player_info` | 查询玩家坐标、生命值、游戏状态、XUID 等信息 |
+| `player_device` | 查询玩家 IP、延迟、设备系统、客户端 ID 等信息 |
+| `player_tags` | 查询玩家标签 |
+| `player_scoreboards` | 查询玩家各计分板分数（支持离线玩家） |
+| `player_nbt` | 查询玩家 SNBT 数据（支持离线玩家） |
+| `player_chat` | 查询插件启动后收集的聊天、加入和退出记录 |
+| `player_query` | 查询数据库中的玩家数据（支持离线及模糊搜索） |
+| `player_tell` | 向指定在线玩家发送消息 |
 
-`server_locate.mode` 可为 `structure` 或 `biome`；`pos_dim` 可为 `overworld`、`nether` 或 `the_end`  
-聊天记录最多保留 `maxList` 条，设置为 `-1` 表示不限制。服务重启后，内存中的聊天记录会清空  
+聊天记录最多保留 `maxList` 条，设置为 `-1` 表示不限制
+服务重启后，内存中的聊天记录会清空  
 
 ## 配置
 
