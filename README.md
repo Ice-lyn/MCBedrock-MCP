@@ -3,6 +3,7 @@
 将 Minecraft 基岩版专用服务器（BDS）的部分信息与操作，以 MCP 工具的形式提供给兼容的 AI 客户端
 项目运行在 levilamina 的 Legacy Script Engine Node.js 环境中，通过 HTTP JSON-RPC 提供工具调用
 > 近60%为人工手写，辅助模型为dsv4.1f，质量可保证，并且我自己也在用 ovo
+> 他主要是给AI群聊机器人准备的MCP lse插件开发用的话我没试过 应该也行?
 
 ## 使用
 
