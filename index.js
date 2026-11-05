@@ -417,6 +417,17 @@ function addTool(name, description, inputSchema, handler) {
     TOOLS.set(name, { name, description, inputSchema, handler });
 }
 
+/**
+ * 删除已注册的工具
+ * @param {string} name - 要删除的工具名称
+ * @returns {boolean} - 删除成功返回true，工具不存在返回false
+ */
+function delTool(name) {
+    if (!TOOLS.has(name))
+        return false;
+    return TOOLS.delete(name);
+}
+
 function checkAuth(req) {
     if (!config.key.enable) return true;
 
