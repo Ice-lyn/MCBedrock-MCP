@@ -369,6 +369,39 @@ const TOOLS = new Map();
 
 
 // === MCP Server 逻辑区 === //
+
+if (config.cmd) {
+    const cmd = mc.newCommand("mcp", "服务器MCP相关指令喵", PermType.GameMasters);
+    cmd.setEnum("mode", ["list"]);
+    cmd.setEnum("connect", ["on", "off"]);
+
+    cmd.mandatory("action", ParamType.Enum, "mode", 1);
+    cmd.mandatory("action", ParamType.Enum, "connect", 1);
+
+    cmd.overload(["mode"]);
+    cmd.overload(["connect"]);
+
+    cmd.setCallback((_cmd, _ori, out, res) => {
+        switch (res.action) {
+            case "list":
+                out.success(
+                    `已注册 ${TOOLS.size} 个工具:\n\n` +
+                    [...TOOLS.values()]
+                        .map(({ name, description }) => `${name}: ${description}`)
+                        .join("\n")
+                )
+                break;
+
+            case "on":
+                break;
+
+            case "off":
+                break;
+        }
+    });
+    cmd.setup();
+}
+
 ll.exports((name, description, inputSchema, handler) => {
     try {
         if (TOOLS.has(name)) // 名称
