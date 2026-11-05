@@ -8,6 +8,9 @@ export const config = {
         key: "sk-KFCcrazyDay4Vme50quickly" // 密钥
     },
 
+    // 启用后台指令
+    cmd: true,
+
     // 模块配置
     module: {
 
