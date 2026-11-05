@@ -50,6 +50,36 @@
 聊天记录最多保留 `maxList` 条，设置为 `-1` 表示不限制
 服务重启后，内存中的聊天记录会清空  
 
+### 外部注册工具
+
+其他 LLSE 插件可以通过 `mcbe-mcp:addTool` 注册 MCP 工具  
+处理函数必须先使用 `ll.exports()` 导出；注册时传入导出函数的命名空间和名称  
+处理函数会收到客户端传入的 `arguments`，其返回值将作为工具结果返回
+
+```js
+// 在提供工具的插件中导出处理函数
+ll.exports(({ text }) => `收到：${text}`, "my-plugin", "echo");
+
+// 注册 MCP 工具
+const addTool = ll.imports("mcbe-mcp", "addTool");
+const result = addTool(
+    "my_echo",
+    "返回输入的文本",
+    {
+        type: "object",
+        properties: {
+            text: { type: "string", description: "要返回的文本" }
+        },
+        required: ["text"]
+    },
+    ["my-plugin", "echo"]
+);
+
+if (!result.ok) logger.error(`注册 MCP 工具失败：${result.out}`);
+```
+
+`addTool` 的参数依次为工具名称、描述、JSON Schema 格式的输入结构，以及 `[命名空间, 导出函数名]`。工具名称不能与已注册工具重复；成功时返回 `{ ok: true }`，失败时返回 `{ ok: false, out: "错误原因" }`。注册成功后，该工具会出现在 `tools/list` 中，并可通过 `tools/call` 调用。
+
 ## 配置
 
 编辑 `Config/config.js`
