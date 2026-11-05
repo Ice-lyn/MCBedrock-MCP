@@ -321,7 +321,7 @@ const TOOLS = new Map();
                     const datas = data.getAllPlayerInfo()
                         .filter(item => item.name.toLowerCase().includes(kw))
                         .map(datas => JSON.stringify(datas));
-                    
+
                     if (datas.length === 0)
                         return "未找到玩家数据";
                     return datas;
@@ -369,6 +369,41 @@ const TOOLS = new Map();
 
 
 // === MCP Server 逻辑区 === //
+ll.exports((name, description, inputSchema, handler) => {
+    try {
+        if (TOOLS.has(name)) // 名称
+            return { ok: false, out: `工具名称已被注册: ${name}` };
+
+        if (!ll.hasExported(...handler)) // 函数
+            return { ok: false, out: `函数未导出: 由于API限制, 请先使用ll.exports()导出函数再注册工具` };
+        handler = ll.imports(...handler);
+
+        TOOLS.set(name, { name, description, inputSchema, handler });
+        logger.info("注册外部工具: " + name);
+        return { ok: true };
+    } catch (e) {
+        return { ok: false, out: e.message };
+    }
+}, "mcbe-mcp", "addTool");
+
+// ll.exports((datas) => datas, "qys", "test_tool");
+// ll.imports("mcbe-mcp", "addTool")("test_tool",
+//     "这是一个外部注册事例，调用后会返回输入的数据",
+//     {
+//         type: 'object',
+//         properties: {
+//             test: {
+//                 type: "string",
+//                 description: "test",
+//             }
+//         },
+//         required: ["test"]
+//     },
+//     [
+//         "qys", // 命名空间
+//         "test_tool" // 导出的函数名称
+//     ]
+// );
 
 /**
  * 注册工具函数
@@ -378,7 +413,7 @@ const TOOLS = new Map();
  * @param {Function} handler - 工具的执行处理函数
  */
 function addTool(name, description, inputSchema, handler) {
-    if (TOOLS.has(name)) throw new Error(`Tool already exists: ${name}`);
+    if (TOOLS.has(name)) throw new Error(`工具名称已被注册: ${name}`);
     TOOLS.set(name, { name, description, inputSchema, handler });
 }
 
