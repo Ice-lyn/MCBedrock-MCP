@@ -1,7 +1,8 @@
 # MCBedock-MCP
 
-将 Minecraft 基岩版专用服务器（BDS）的部分信息与操作，以 MCP 工具的形式提供给兼容的 AI 客户端
+将 Minecraft 基岩版的部分信息与操作，以 MCP 工具的形式提供给兼容的 AI 客户端
 项目运行在 levilamina 的 Legacy Script Engine Node.js 环境中，通过 HTTP JSON-RPC 提供工具调用
+支持后台指令，支持外部接口接入
 > 近60%为人工手写，辅助模型为dsv4.1f，质量可保证，并且我自己也在用 ovo  
 > 他主要是给AI群聊机器人准备的MCP lse插件开发用的话我没试过 应该也行?  
 
@@ -24,11 +25,11 @@
 当前实现是简单的 HTTP POST JSON-RPC 接口，不提供 SSE，也没有实现完整的 Streamable HTTP 会话流程  
 因此，客户端需要支持这种 HTTP JSON-RPC 接入方式  
 只支持标准 Streamable HTTP/SSE 的客户端可能无法直接连接，需要使用兼容桥接程序  
-项目没有内置 MCP 客户端配置或桥接服务  
 
 ## 可用工具
 
-以下工具是否注册取决于 `Config/config.js` 中对应的模块开关；`player_chat` 由 `module.player.chat.enable` 控制。
+我们提供了一些简单的基础工具，如果想要更多工具可以阅读下节的接入指南自行接入您的API  
+以下工具均可通过配置文件进行配置或开关  
 
 | 工具 | 用途 |
 | --- | --- |
@@ -63,22 +64,22 @@ ll.exports(({ text }) => `收到：${text}`, "my-plugin", "echo");
 // 注册 MCP 工具
 const addTool = ll.imports("mcbe-mcp", "addTool");
 const result = addTool(
-    "my_echo",
-    "返回输入的文本",
-    {
+    "my_echo", // 工具名称
+    "返回输入的文本", // 工具描述
+    { // JSON Schema 格式的输入结构
         type: "object",
         properties: {
             text: { type: "string", description: "要返回的文本" }
         },
         required: ["text"]
     },
-    ["my-plugin", "echo"]
+    ["my-plugin", "echo"] // [命名空间, 导出函数名]
 );
 
 if (!result.ok) logger.error(`注册 MCP 工具失败：${result.out}`);
 ```
-
-`addTool` 的参数依次为工具名称、描述、JSON Schema 格式的输入结构，以及 `[命名空间, 导出函数名]`。工具名称不能与已注册工具重复；成功时返回 `{ ok: true }`，失败时返回 `{ ok: false, out: "错误原因" }`。注册成功后，该工具会出现在 `tools/list` 中，并可通过 `tools/call` 调用。
+> 工具名称不能与已注册工具重复  
+> 成功时返回 `{ ok: true }`，失败时返回 `{ ok: false, out: "错误原因" }`  
 
 ## 配置
 
