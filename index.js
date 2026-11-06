@@ -8,14 +8,27 @@ const TOOLS = new Map();
 
 // // 非BDS使用模拟
 // if (typeof mc === "undefined") {
-//     var mc = {
-//         runcmdEx: (...data) => `run cmd -> ${data}`,
-//         getPlayer: () => { },
-//         getAllScoreObjectives: (...data) => ["积分榜", "aaa", "bbb"],
-//         listen: (event, callback) => { },
-//         getBDSVersion: () => "v1.14.51.4",
-//         getServerProtocolVersion: () => "114514",
-//         getWeather: (mode) => `mode = ${mode}`
+//     var noBds = true;
+
+//     var mc = simulationBDS();
+//     var data = simulationBDS();
+//     var ll = simulationBDS();
+
+//     var logger = console;
+
+//     function simulationBDS() {
+//         const target = function () { };
+//         return new Proxy(target, {
+//             get(t, prop) {
+//                 if (prop === Symbol.toPrimitive || prop === 'toString') {
+//                     return () => '';
+//                 }
+//                 return simulationBDS();
+//             },
+//             apply() {
+//                 return simulationBDS();
+//             }
+//         });
 //     }
 // }
 
@@ -370,7 +383,7 @@ const TOOLS = new Map();
 
 // === MCP Server 逻辑区 === //
 
-if (config.cmd) {
+if (config.cmd && !noBds) {
     const cmd = mc.newCommand("mcp", "服务器MCP相关指令喵", PermType.GameMasters);
     cmd.setEnum("mode", ["list"]);
     cmd.setEnum("connect", ["on", "off"]);
