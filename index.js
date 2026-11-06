@@ -386,16 +386,21 @@ const TOOLS = new Map();
 if (config.cmd) {
     const cmd = mc.newCommand("mcp", "服务器MCP相关指令喵", PermType.GameMasters);
     cmd.setEnum("mode", ["list"]);
-    cmd.setEnum("mgr", ["delete"]);
+    cmd.setEnum("del", ["delete"]);
+    cmd.setEnum("use", ["call"]);
 
     cmd.mandatory("data", ParamType.RawText);
+    cmd.mandatory("json", ParamType.JsonValue);
+    cmd.mandatory("string", ParamType.String);
     cmd.mandatory("action", ParamType.Enum, "mode", 1);
-    cmd.mandatory("action", ParamType.Enum, "mgr", 1);
+    cmd.mandatory("action", ParamType.Enum, "del", 1);
+    cmd.mandatory("action", ParamType.Enum, "use", 1);
 
     cmd.overload(["mode"]);
-    cmd.overload(["mgr", "data"]);
+    cmd.overload(["del", "data"]);
+    cmd.overload(["use", "string", "json"]);
 
-    cmd.setCallback((_cmd, _ori, out, res) => {
+    cmd.setCallback(async (_cmd, _ori, out, res) => {
         switch (res.action) {
             case "list":
                 out.success(
@@ -409,11 +414,29 @@ if (config.cmd) {
             case "delete":
                 const resdata = delTool(res.data);
 
-                if (resdata) 
+                if (resdata)
                     out.success(`删除工具：${res.data}`);
-                else 
+                else
                     out.error("删除失败...");
 
+                break;
+
+            case "call":
+                const tool = TOOLS.get(res.string);
+                if (!tool) {
+                    out.error(`未找到该工具: ${res.string}`);
+                    break;
+                }
+                
+                try {
+                    out.success(
+                        JSON.stringify(
+                            await tool.handler(JSON.parse(res.json) ?? {})
+                        )
+                    );
+                } catch (e) {
+                    out.error(`调用时发送错误：${e}`);
+                }
                 break;
         }
     });
