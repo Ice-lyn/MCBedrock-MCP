@@ -386,13 +386,14 @@ const TOOLS = new Map();
 if (config.cmd) {
     const cmd = mc.newCommand("mcp", "服务器MCP相关指令喵", PermType.GameMasters);
     cmd.setEnum("mode", ["list"]);
-    cmd.setEnum("connect", ["on", "off"]);
+    cmd.setEnum("mgr", ["delete"]);
 
+    cmd.mandatory("data", ParamType.RawText);
     cmd.mandatory("action", ParamType.Enum, "mode", 1);
-    cmd.mandatory("action", ParamType.Enum, "connect", 1);
+    cmd.mandatory("action", ParamType.Enum, "mgr", 1);
 
     cmd.overload(["mode"]);
-    cmd.overload(["connect"]);
+    cmd.overload(["mgr", "data"]);
 
     cmd.setCallback((_cmd, _ori, out, res) => {
         switch (res.action) {
@@ -405,10 +406,14 @@ if (config.cmd) {
                 )
                 break;
 
-            case "on":
-                break;
+            case "delete":
+                const resdata = delTool(res.data);
 
-            case "off":
+                if (resdata) 
+                    out.success(`删除工具：${res.data}`);
+                else 
+                    out.error("删除失败...");
+
                 break;
         }
     });
