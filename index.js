@@ -8,7 +8,7 @@ const TOOLS = new Map();
 
 // // 非BDS使用模拟
 // if (typeof mc === "undefined") {
-//     var noBds = true;
+//     config.cmd = false;
 
 //     var mc = simulationBDS();
 //     var data = simulationBDS();
@@ -383,7 +383,7 @@ const TOOLS = new Map();
 
 // === MCP Server 逻辑区 === //
 
-if (config.cmd && !noBds) {
+if (config.cmd) {
     const cmd = mc.newCommand("mcp", "服务器MCP相关指令喵", PermType.GameMasters);
     cmd.setEnum("mode", ["list"]);
     cmd.setEnum("connect", ["on", "off"]);
